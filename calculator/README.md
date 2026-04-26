@@ -1,15 +1,15 @@
 # Calculator
 
-A simple calculator application that provides basic arithmetic and bitwise XOR operations through both a Command Line Interface (CLI) and a Graphical User Interface (GUI).
+A simple calculator application that provides basic arithmetic and exponentiation operations through both a Command Line Interface (CLI) and a Graphical User Interface (GUI).
 
 ## Features
 
 - **Basic Arithmetic Operations**: Supports addition, subtraction, multiplication, and division.
-- **Bitwise Operation**: Supports the XOR (`^`) operation.
+- **Power Operation**: Supports the exponentiation (`^`) operation.
 - **Operator Precedence**: Correctly handles the order of operations:
-  - Multiplication (`*`) and Division (`/`) have the highest precedence.
-  - Addition (`+`) and Subtraction (`-`) have medium precedence.
-  - XOR (`^`) has the lowest precedence.
+  - Exponentiation (`^`) has the highest precedence.
+  - Multiplication (`*`) and Division (`/`) have medium-high precedence.
+  - Addition (`+`) and Subtraction (`-`) have medium-low precedence.
 - **Dual Interfaces**:
   - **CLI**: Quickly evaluate expressions from the terminal with JSON output.
   - **GUI**: An intuitive window-based interface for interactive calculations.
@@ -51,11 +51,11 @@ python gui.py
 
 | Operator | Description | Precedence |
 |----------|-------------|------------|
-| `*`      | Multiplication | High       |
-| `/`      | Division       | High       |
-| `+`      | Addition       | Medium     |
-| `-`      | Subtraction    | Medium     |
-| `^`      | Bitwise XOR    | Low        |
+| `^`      | Exponentiation | High       |
+| `*`      | Multiplication | Medium     |
+| `/`      | Division       | Medium     |
+| `+`      | Addition       | Low        |
+| `-`      | Subtraction    | Low        |
 
 ## Testing
 

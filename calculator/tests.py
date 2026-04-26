@@ -24,18 +24,18 @@ class TestCalculator(unittest.TestCase):
         result = self.calculator.evaluate("10 / 2")
         self.assertEqual(result, 5)
 
-    def test_xor(self):
+    def test_power(self):
         result = self.calculator.evaluate("3 ^ 5")
-        # 3 is 011 in binary, 5 is 101 in binary. 011 ^ 101 = 110, which is 6.
-        self.assertEqual(result, 6)
+        # 3^5 = 243
+        self.assertEqual(result, 243)
 
-    def test_xor_with_zero(self):
+    def test_power_with_zero(self):
         result = self.calculator.evaluate("10 ^ 0")
-        self.assertEqual(result, 10)
+        self.assertEqual(result, 1)
 
-    def test_xor_with_self(self):
-        result = self.calculator.evaluate("10 ^ 10")
-        self.assertEqual(result, 0)
+    def test_power_with_one(self):
+        result = self.calculator.evaluate("10 ^ 1")
+        self.assertEqual(result, 10)
 
     def test_nested_expression(self):
         result = self.calculator.evaluate("3 * 4 + 5")
@@ -45,12 +45,11 @@ class TestCalculator(unittest.TestCase):
         result = self.calculator.evaluate("2 * 3 - 8 / 2 + 5")
         self.assertEqual(result, 7)
 
-    def test_expression_with_xor(self):
-        result = self.calculator.evaluate("3 ^ 5 + 2")
-        # XOR has lower precedence (0) than + (2)
-        # So it should be 3 ^ (5 + 2) = 3 ^ 7
-        # 3 is 011, 7 is 111. 011 ^ 111 = 100, which is 4.
-        self.assertEqual(result, 4)
+    def test_expression_with_power(self):
+        result = self.calculator.evaluate("3 ^ 2 + 2")
+        # Power has higher precedence than +
+        # So it should be (3^2) + 2 = 9 + 2 = 11
+        self.assertEqual(result, 11)
 
     def test_empty_expression(self):
         result = self.calculator.evaluate("")

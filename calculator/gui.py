@@ -5,35 +5,82 @@ from pkg.calculator import Calculator
 class CalculatorGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Calculator")
+        self.root.title("Modern Calculator")
+        self.root.configure(bg="#2c3e50")
         self.calculator = Calculator()
         
         self.expression = ""
         self.display_var = tk.StringVar()
         
-        # Display
-        self.display = tk.Entry(root, textvariable=self.display_var, font=("Arial", 20), borderwidth=5, relief="flat", justify='right')
-        self.display.grid(row=0, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
+        # Colors
+        self.colors = {
+            "bg": "#2c3e50",
+            "display_bg": "#ecf0f1",
+            "text": "#2c3e50",
+            "btn_num": "#34495e",
+            "btn_op": "#e67e22",
+            "btn_spec": "#e74c3c",
+            "btn_eq": "#2ecc71",
+            "btn_text": "black"
+        }
         
-        # Buttons
+        # Display
+        self.display = tk.Entry(
+            root, 
+            textvariable=self.display_var, 
+            font=("Arial", 24), 
+            borderwidth=0, 
+            relief="flat", 
+            justify='right', 
+            bg=self.colors["display_bg"], 
+            fg=self.colors["text"]
+        )
+        self.display.grid(row=0, column=0, columnspan=4, padx=20, pady=20, sticky="nsew")
+        
+        # Button configuration
+        # (text, row, col, columnspan, color)
         buttons = [
-            '7', '8', '9', '/',
-            '4', '5', '6', '*',
-            '1', '2', '3', '-',
-            '0', 'C', '=', '+',
-            '^'
+            ('AC', 1, 0, 1, self.colors["btn_num"]),
+            ('DEL', 1, 1, 1, self.colors["btn_num"]),
+            ('^', 1, 2, 1, self.colors["btn_num"]),
+            ('/', 1, 3, 1, self.colors["btn_op"]),
+            
+            ('7', 2, 0, 1, self.colors["btn_num"]),
+            ('8', 2, 1, 1, self.colors["btn_num"]),
+            ('9', 2, 2, 1, self.colors["btn_num"]),
+            ('*', 2, 3, 1, self.colors["btn_op"]),
+            
+            ('4', 3, 0, 1, self.colors["btn_num"]),
+            ('5', 3, 1, 1, self.colors["btn_num"]),
+            ('6', 3, 2, 1, self.colors["btn_num"]),
+            ('-', 3, 3, 1, self.colors["btn_op"]),
+            
+            ('1', 4, 0, 1, self.colors["btn_num"]),
+            ('2', 4, 1, 1, self.colors["btn_num"]),
+            ('3', 4, 2, 1, self.colors["btn_spec"]),
+            ('+', 4, 3, 1, self.colors["btn_op"]),
+            
+            ('.', 5, 0, 1, self.colors["btn_spec"]),
+            ('0', 5, 1, 1, self.colors["btn_eq"]),
+            ('=', 5, 2, 2, self.colors["btn_op"]),
         ]
         
-        row = 1
-        col = 0
-        for button in buttons:
-            action = lambda x=button: self.on_button_click(x)
-            tk.Button(root, text=button, width=5, height=2, font=("Arial", 14),
-                      command=action).grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
-            col += 1
-            if col > 3:
-                col = 0
-                row += 1
+        for (text, row, col, span, color) in buttons:
+            action = lambda x=text: self.on_button_click(x)
+            btn = tk.Button(
+                root, 
+                text=text, 
+                width=5, 
+                height=2, 
+                font=("Arial", 14, "bold"),
+                bg=color, 
+                fg=self.colors["btn_text"],
+                activebackground=color, 
+                activeforeground=self.colors["btn_text"],
+                relief="flat",
+                command=action
+            )
+            btn.grid(row=row, column=col, columnspan=span, padx=5, pady=5, sticky="nsew")
         
         # Configure grid weights so buttons resize
         for i in range(4):
@@ -42,9 +89,17 @@ class CalculatorGUI:
             self.root.grid_rowconfigure(i, weight=1)
 
     def on_button_click(self, char):
-        if char == 'C':
+        if char == 'AC':
             self.expression = ""
             self.display_var.set("")
+        elif char == 'DEL':
+            if self.expression.endswith(" "):
+                # Remove the space and the operator.
+                self.expression = self.expression[:-2]
+            else:
+                # Remove the last character (digit or .)
+                self.expression = self.expression[:-1]
+            self.display_var.set(self.expression.replace(" ", ""))
         elif char == '=':
             try:
                 # Ensure spaces between tokens for the Calculator.evaluate method

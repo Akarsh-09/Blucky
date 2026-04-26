@@ -52,17 +52,17 @@ def run_python_file(working_dir, file_path, args=None):
 
 schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
-    description="Executes a specified Python file relative to the working directory",
+    description="Executes a specified Python file (with .py extension) relative to the working directory. Cannot execute inline code - file_path must point to an actual Python file. Optional args are passed as command-line arguments to the script.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
             "file_path": types.Schema(
                 type=types.Type.STRING,
-                description="The path to the Python file relative to the working directory",
+                description="REQUIRED: The path to a .py Python file relative to the working directory. Must be an actual file path, not inline code. Cannot use -c or other inline execution methods.",
             ),
             "args": types.Schema(
                 type=types.Type.ARRAY,
-                description="An optional Array of strings to be used as the CLI arguments for the Python file execution",
+                description="Optional array of strings to be passed as command-line arguments to the Python script",
                 items=types.Schema(
                     type=types.Type.STRING
                 ),
