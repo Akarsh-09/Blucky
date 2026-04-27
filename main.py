@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import argparse
 from dotenv import load_dotenv
 import openai
@@ -15,9 +16,12 @@ def main():
 
     load_dotenv()
 
-    api_key = os.environ.get("API_KEY")
-    base_url = os.environ.get("BASE_URL")
-    model_name = os.environ.get("MODEL")
+    Model_settings = os.environ.get("MODEL_SETTINGS", "{}")
+    settings_dict = json.loads(Model_settings)
+
+    api_key = settings_dict.get("API_KEY")
+    base_url = settings_dict.get("BASE_URL")
+    model_name = settings_dict.get("MODEL")
 
     client = openai.OpenAI(api_key=api_key, base_url=base_url)
 
