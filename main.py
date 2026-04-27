@@ -5,7 +5,7 @@ import argparse
 from dotenv import load_dotenv
 import openai
 from prompts import system_prompt
-from functions.get_file_info import schema_get_file_info
+from functions.get_dir_info import schema_get_dir_info
 from functions.get_file_content import schema_get_file_content
 from functions.write_file import schema_write_file
 from functions.run_python_file import schema_run_python_file
@@ -38,7 +38,7 @@ def main():
     ]
 
     available_functions = [
-        schema_get_file_info,
+        schema_get_dir_info,
         schema_get_file_content,
         schema_write_file,
         schema_run_python_file,

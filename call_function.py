@@ -1,12 +1,13 @@
-import os
 import json
-from functions.get_file_info import get_file_info
+from functions.get_dir_info import get_dir_info
 from functions.get_file_content import get_file_content
 from functions.write_file import write_file
 from functions.run_python_file import run_python_file
 
-# working_dir = os.getcwd()
-working_dir = "calculator"
+# --------- VERY IMP --------- #
+# Carefully specify the working directory that Blucky is allowed to access.
+
+working_dir = "calculator" 
 
 def call_function(tool_call, verbose=False):
 
@@ -24,8 +25,8 @@ def call_function(tool_call, verbose=False):
 
     result = None
     try:
-        if function_name == "get_file_info":
-            result = get_file_info(working_dir, **args)
+        if function_name == "get_dir_info":
+            result = get_dir_info(working_dir, **args)
         elif function_name == "get_file_content":
             result = get_file_content(working_dir, **args)
         elif function_name == "write_file":

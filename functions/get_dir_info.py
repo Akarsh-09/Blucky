@@ -1,12 +1,6 @@
 import os
 
-
-# - README.md: file_size=1032, bytes, is_dir=False
-# - src: file_size=128 bytes, is_dir=True
-# - package.json: file_size=1234 bytes, is_dir=False
-
-
-def get_file_info(working_dir, directory="."):
+def get_dir_info(working_dir, directory="."):
 
     clean_dir = directory.lstrip('/\\')
 
@@ -32,10 +26,10 @@ def get_file_info(working_dir, directory="."):
     return final_response
 
 
-schema_get_file_info = {
+schema_get_dir_info = {
     "type": "function",
     "function": {
-        "name": "get_file_info",
+        "name": "get_dir_info",
         "description": "Lists files in a specified directory relative to the working directory, providing file size and directory status",
         "parameters": {
             "type": "object",

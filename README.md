@@ -10,7 +10,7 @@ Blucky is a personal Agentic AI designed to interact with a local file system. I
     - Create or update files.
     - Execute Python files with optional arguments.
 - **Agentic Workflow**: Uses a loop to plan and execute function calls to achieve a user's goal.
-- **LLM Integration**: Powered by Google's Gemini models via the `google-genai` SDK.
+- **LLM Integration**: Powered by LLMs via the `openai` SDK, allowing compatibility with various model providers.
 - **Integrated Example**: Includes a fully functional `calculator` sub-project to demonstrate the agent's ability to run and test code.
 
 ## 📁 Project Structure
@@ -24,7 +24,7 @@ Blucky is a personal Agentic AI designed to interact with a local file system. I
 ├── pyproject.toml       # Project dependencies and metadata
 ├── tests.py             # Tests for the agent's core tools
 ├── functions/           # Implementation of agent tools
-│   ├── get_file_info.py
+│   ├── get_dir_info.py
 │   ├── get_file_content.py
 │   ├── run_python_file.py
 │   └── write_file.py
@@ -47,13 +47,13 @@ Blucky is a personal Agentic AI designed to interact with a local file system. I
 
 2. **Install dependencies**:
    ```bash
-   pip install google-genai python-dotenv
+   pip install openai python-dotenv
    ```
 
 3. **Environment Setup**:
-   Create a `.env` file in the root directory and add your Gemini API key:
+   Create a `.env` file in the root directory and add your API configuration. The agent expects `MODEL_SETTINGS` as a JSON string:
    ```env
-   GEMINI_API_KEY=your_api_key_here
+   MODEL_SETTINGS='{"API_KEY": "your_api_key", "BASE_URL": "your_base_url", "MODEL": "your_model_name"}'
    ```
 
 ## 💻 Usage
@@ -72,11 +72,13 @@ python main.py --verbose "Run the calculator tests and report the results."
 
 ## 🧮 Included Example: Calculator
 
-The `calculator/` directory contains a standalone calculator app that the Blucky agent can manage. It supports:
+The `calculator/` directory contains a standalone scientific calculator app that the Blucky agent can manage. It supports:
 - **Basic Arithmetic**: `+`, `-`, `*`, `/`
-- **Exponentiation**: `^`
-- **Operator Precedence**: Correctly handles order of operations.
-- **Interfaces**: Both CLI (`calculator/main.py`) and GUI (`calculator/gui.py`).
+- **Advanced Math**: Exponentiation (`^`), Square Root (`sqrt`), Logarithms (`log`, `ln`), and Trigonometry (`sin`, `cos`, `tan`).
+- **Complex Expressions**: Supports parentheses `()` and follows standard mathematical operator precedence.
+- **Interfaces**: 
+    - **CLI**: Fast expression evaluation via `calculator/main.py`.
+    - **GUI**: A Minecraft-inspired graphical interface via `calculator/gui.py` featuring a virtual keypad and a **Calculation History** panel.
 
 ## ⚙️ Configuration
 
