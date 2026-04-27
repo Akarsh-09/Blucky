@@ -2,8 +2,7 @@ import os
 import sys
 import argparse
 from dotenv import load_dotenv
-from google import genai
-from google.genai import types
+import openai
 from prompts import system_prompt
 from functions.get_file_info import schema_get_file_info
 from functions.get_file_content import schema_get_file_content
@@ -16,71 +15,68 @@ def main():
 
     load_dotenv()
 
-    api_key = os.environ.get("GEMINI_API_KEY")
-    client = genai.Client(api_key=api_key)
+    api_key = os.environ.get("API_KEY")
+    base_url = os.environ.get("BASE_URL")
+    model_name = os.environ.get("MODEL")
+
+    client = openai.OpenAI(api_key=api_key, base_url=base_url)
 
     parser = argparse.ArgumentParser(description="Chatbot")
     parser.add_argument("user_prompt", type=str, help="User prompt")
-
     parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
     args = parser.parse_args()
 
     user_prompt = args.user_prompt
 
-    messages = [types.Content(role="user", parts=[types.Part(text=user_prompt)])]
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": args.user_prompt}
+    ]
 
-    available_functions = types.Tool(
-        function_declarations=[
-            schema_get_file_info,
-            schema_get_file_content,
-            schema_write_file,
-            schema_run_python_file,
-        ]
-    )
-
-    config=types.GenerateContentConfig(
-        tools=[available_functions],
-        system_instruction=system_prompt
-    )
+    available_functions = [
+        schema_get_file_info,
+        schema_get_file_content,
+        schema_write_file,
+        schema_run_python_file,
+    ]
 
     for i in range(0, MAX_ITERS):
 
-        response = client.models.generate_content(
-            model='gemma-4-31b-it',
-            contents=messages,
-            config=config
-        )
-
-        if response is None or response.usage_metadata is None:
-            print("Response is flawed")
+        try:
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=messages,
+                tools=available_functions,
+                tool_choice="auto"
+            )
+        except Exception as e:
+            print(f"API Error: {e}")
             break
 
+        message = response.choices[0].message
+
+        messages.append(message)
+
         if args.verbose:
-            print("Prompt:", user_prompt)
-            print("\n--- Verbose Output ---")
-            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+            print(f"\nPrompt: {user_prompt if i == 0 else 'Auto-Iterating...'}")
+            print("\n--- Verbose Output ---\n")
+            print(f"Prompt tokens: {response.usage.prompt_tokens}")
+            print(f"Response tokens: {response.usage.completion_tokens}")
 
-        if response.candidates:
-            for candidate in response.candidates:
-                if candidate is None or candidate.content is None:
-                        continue
-                messages.append(candidate.content)
-
-        if response.function_calls:
-            for function_call_part in response.function_calls:
-                result = call_function(function_call_part, args.verbose)
-                messages.append(result)
+        if message.tool_calls:
+            for tool_call in message.tool_calls:
+                result_message = call_function(tool_call, args.verbose)
+                messages.append(result_message)
         else:
             # No more function calls, agent is done - print response and exit
-            if response.text:
-                print(response.text)
+            if message.content:
+                print(message.content)
             break
 
         if i == MAX_ITERS - 1:
             print("Maximum Iterations Limit Reached. Thus Stopping.")
-            exit(1)
-            return 
- 
+            sys.exit(1)
 
-main()
+
+if __name__ == "__main__":
+    main()

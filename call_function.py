@@ -1,57 +1,48 @@
 import os
+import json
 from functions.get_file_info import get_file_info
 from functions.get_file_content import get_file_content
 from functions.write_file import write_file
 from functions.run_python_file import run_python_file
-from google.genai import types
 
 # working_dir = os.getcwd()
 working_dir = "calculator"
 
-def call_function(function_call_part, verbose=False):
+def call_function(tool_call, verbose=False):
+
+    function_name = tool_call.function.name
+
+    try:
+        args = json.loads(tool_call.function.arguments)
+    except json.JSONDecodeError:
+        args = {}
+
     if verbose:
-        print(f" - Calling function: {function_call_part.name}({function_call_part.args})")
+        print(f" - Calling function: {function_name}({args})")
     else:
-        print(f" - Calling function: {function_call_part.name}")
+        print(f" - Calling function: {function_name}({args})")
 
     result = None
     try:
-        if function_call_part.name == "get_file_info":
-            result = get_file_info(working_dir, **function_call_part.args)
-        elif function_call_part.name == "get_file_content":
-            result = get_file_content(working_dir, **function_call_part.args)
-        elif function_call_part.name == "write_file":
-            result = write_file(working_dir, **function_call_part.args)
-        elif function_call_part.name == "run_python_file":
-            result = run_python_file(working_dir, **function_call_part.args)
-    except TypeError as e:
-        return types.Content(
-            role="tool",
-            parts=[
-                types.Part.from_function_response(
-                    name=function_call_part.name,
-                    response={"error": f"Missing required parameter: {str(e)}"},
-                )
-            ],
-        )
-    
-    if result is None:
-        return types.Content(
-            role="tool",
-            parts=[
-                types.Part.from_function_response(
-                    name=function_call_part.name,
-                    response={"error": f"Unknown function: {function_call_part.name}"},
-                )
-            ],
-        )
+        if function_name == "get_file_info":
+            result = get_file_info(working_dir, **args)
+        elif function_name == "get_file_content":
+            result = get_file_content(working_dir, **args)
+        elif function_name == "write_file":
+            result = write_file(working_dir, **args)
+        elif function_name == "run_python_file":
+            result = run_python_file(working_dir, **args)
+        else:
+            result = f"Error: Unknown function '{function_name}'"
 
-    return types.Content(
-        role="tool",
-        parts=[
-            types.Part.from_function_response(
-                name=function_call_part.name,
-                response={"result": result},
-            )
-        ],
-    )
+    except TypeError as e:
+        result = f"Error: Missing or invalid parameter: {str(e)}"
+    except Exception as e:
+        result = f"Error: {str(e)}"
+    
+    return {
+        "role": "tool",
+        "tool_call_id": tool_call.id,
+        "name": function_name,
+        "content": str(result)
+    }

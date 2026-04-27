@@ -1,6 +1,5 @@
 import os
 import subprocess
-from google.genai import types
 
 def run_python_file(working_dir, file_path, args=None):
 
@@ -50,24 +49,27 @@ def run_python_file(working_dir, file_path, args=None):
         return f'Error in executing Python file: {e}'
     
 
-schema_run_python_file = types.FunctionDeclaration(
-    name="run_python_file",
-    description="Executes a specified Python file (with .py extension) relative to the working directory. Cannot execute inline code - file_path must point to an actual Python file. Optional args are passed as command-line arguments to the script.",
-    parameters=types.Schema(
-        type=types.Type.OBJECT,
-        properties={
-            "file_path": types.Schema(
-                type=types.Type.STRING,
-                description="REQUIRED: The path to a .py Python file relative to the working directory. Must be an actual file path, not inline code. Cannot use -c or other inline execution methods.",
-            ),
-            "args": types.Schema(
-                type=types.Type.ARRAY,
-                description="Optional array of strings to be passed as command-line arguments to the Python script",
-                items=types.Schema(
-                    type=types.Type.STRING
-                ),
-            )
-        },
-        required=["file_path"]
-    )
-)
+schema_run_python_file = {
+    "type": "function",
+    "function": {
+        "name": "run_python_file",
+        "description": "Executes a specified Python file (with .py extension) relative to the working directory. Cannot execute inline code - file_path must point to an actual Python file. Optional args are passed as command-line arguments to the script.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "REQUIRED: The path to a .py Python file relative to the working directory. Must be an actual file path, not inline code. Cannot use -c or other inline execution methods.",
+                },
+                "args": {
+                    "type": "array",
+                    "description": "Optional array of strings to be passed as command-line arguments to the Python script",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["file_path"]
+        }
+    }
+}
